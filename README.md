@@ -3,9 +3,9 @@ Mental helth test based on [QIDS-J](https://www.mhlw.go.jp/bunya/shougaihoken/ko
 
 (QIDS-J is a self-report measure of depression)
 ## Installation
-``$ npm i -g mental-check``
+``$ npm i -g mental-health-check``
 
 ## Usage
-``$ mental-check``
+``$ mental-health-check``
 
 Please answer 16 questions.
