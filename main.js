@@ -164,75 +164,57 @@ const select = async (item) => {
   scores.push(score)
   return scores
 }
+class Severity {
+  calculateScore(scores) {
+    const aboutSleep = []
+    const aboutWeight = []
+    const aboutPsychomotor = []
+    const others = []
+    scores.forEach((score, idx) => {
+      if (idx < 4) {
+        aboutSleep.push(score)
+      } else if (idx > 4 && idx < 9) {
+        aboutWeight.push(score)
+      } else if (idx > 13) {
+        aboutPsychomotor.push(score)
+      } else {
+        others.push(score)
+      }
+    })
+    const totalScores = others.concat(Math.max(...aboutSleep), Math.max(...aboutWeight), Math.max(...aboutPsychomotor))
+    const totalScore = totalScores.reduce((sum, value) => sum + value)
+    return totalScore
+  }
 
-const calculateScore = (scores) => {
-  const aboutSleep = []
-  const aboutWeight = []
-  const aboutPsychomotor = []
-  const others = []
-  scores.forEach((score, idx) => {
-    if (idx < 4) {
-      aboutSleep.push(score)
-    } else if (idx > 4 && idx < 9) {
-      aboutWeight.push(score)
-    } else if (idx > 13) {
-      aboutPsychomotor.push(score)
+  assessSeverity(score) {
+    if (score >= 0 && score <= 5) {
+      return 'nomal'
+    } else if (score >= 6 && score <= 10) {
+      return 'mild'
+    } else if (score >= 11 && score <= 15) {
+      return 'moderate'
+    } else if (score >= 16 && score <= 20) {
+      return 'severe'
     } else {
-      others.push(score)
+      return 'verySevere'
     }
-  })
-  const totalScores = others.concat(Math.max(...aboutSleep), Math.max(...aboutWeight), Math.max(...aboutPsychomotor))
-  const totalScore = totalScores.reduce((sum, value) => sum + value)
-  return totalScore
-}
-
-const assessSeverity = (score) => {
-  if (score >= 0 && score <= 5) {
-    const severity = '問題なし'
-    const severityMessage = new SeverityMessage(score, severity)
-    severityMessage.normal()
-  } else if (score >= 6 && score <= 10) {
-    const severity = '軽度'
-    const severityMessage = new SeverityMessage(score, severity)
-    severityMessage.mild()
-  } else if (score >= 11 && score <= 15) {
-    const severity = '中等度'
-    const severityMessage = new SeverityMessage(score, severity)
-    severityMessage.moderate()
-  } else if (score >= 16) {
-    const severity = '重度'
-    const severityMessage = new SeverityMessage(score, severity)
-    severityMessage.severe()
-  } else {
-    const severity = 'きわめて重度'
-    const severityMessage = new SeverityMessage(score, severity)
-    severityMessage.verySevere()
-  }
-}
-
-class SeverityMessage {
-  constructor (score, severity) {
-    console.log(`あなたのうつ症状の重症度は27点中「${score}点」で「${severity}」という結果になりました。`)
   }
 
-  normal () {
-    console.log('今のところ安定しています。\n自覚のないままストレスが溜まっていることもあるので、ときどき自分自身の生活を振り返ってみる時間を持ちましょう')
-  }
-
-  mild () {
-    console.log('治療を要するレベルではありませんが、気になることがあれば医療機関に相談してみてもよいかもしれません。')
-  }
-
-  moderate () {
-    console.log('ストレス反応やうつ病の症状に心当たりがある場合には、専門家に相談してみることをお勧めします。')
-  }
-
-  severe () {
-    console.log('何かこころに問題を抱えているように思われます。\n身体の病気と同様に「早期発見」が大切です。専門医に診てもらうことをお勧めします。')
-  }
-
-  verySevere () {
-    console.log('こころの不調のサインが多く見受けられています。とても心配です。速やかに専門医に診てもらってください。')
+  resultMessage(severity) {
+    const translation = {nomal: '問題なし', mild: '軽度', moderate: '中等度', severe: '重度', verySevere: 'きわめて重度'}
+    console.log(`あなたのうつ症状の重症度は27点中「${totalScore}点」で「${translation[severity]}」という結果になりました。`)
+    switch (severity){
+      case 'nomal':
+        return '今のところ安定しています。\n自覚のないままストレスが溜まっていることもあるので、ときどき自分自身の生活を振り返ってみる時間を持ちましょう'
+      case 'mild':
+        return '治療を要するレベルではありませんが、気になることがあれば医療機関に相談してみてもよいかもしれません。'
+      case 'moderate':
+        return 'ストレス反応やうつ病の症状に心当たりがある場合には、専門家に相談してみることをお勧めします。'
+      case 'severe':
+        return '何かこころに問題を抱えているように思われます。\n身体の病気と同様に「早期発見」が大切です。専門医に診てもらうことをお勧めします。'
+      case 'verySevere':
+        return 'こころの不調のサインが多く見受けられています。とても心配です。速やかに専門医に診てもらってください。'
+    }
   }
 }
 
@@ -243,8 +225,10 @@ const main = async () => {
     for (const item of items) {
       await select(item)
     }
-    const totalScore = calculateScore(scores)
-    assessSeverity(totalScore)
+    const severity = new Severity(scores)
+    totalScore = severity.calculateScore(scores)
+    severityGrade = severity.assessSeverity(totalScore)
+    console.log(severity.resultMessage(severityGrade))
     console.log(lastMessage)
   })
 }
