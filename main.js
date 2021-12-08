@@ -164,6 +164,7 @@ const select = async (item) => {
   scores.push(score)
   return scores
 }
+
 class Severity {
   calculateScore(scores) {
     const aboutSleep = []
