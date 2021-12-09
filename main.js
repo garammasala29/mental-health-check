@@ -166,7 +166,7 @@ const select = async (item) => {
 }
 
 class Severity {
-  calculateScore(scores) {
+  constructor(scores) {
     const aboutSleep = []
     const aboutWeight = []
     const aboutPsychomotor = []
@@ -184,7 +184,7 @@ class Severity {
     })
     const totalScores = others.concat(Math.max(...aboutSleep), Math.max(...aboutWeight), Math.max(...aboutPsychomotor))
     const totalScore = totalScores.reduce((sum, value) => sum + value)
-    return totalScore
+    this.totalScore = totalScore
   }
 
   assessSeverity(score) {
@@ -203,7 +203,7 @@ class Severity {
 
   resultMessage(severity) {
     const translation = {nomal: '問題なし', mild: '軽度', moderate: '中等度', severe: '重度', verySevere: 'きわめて重度'}
-    console.log(`あなたのうつ症状の重症度は27点中「${totalScore}点」で「${translation[severity]}」という結果になりました。`)
+    console.log(`あなたのうつ症状の重症度は27点中「${this.totalScore}点」で「${translation[severity]}」という結果になりました。`)
     switch (severity){
       case 'nomal':
         return '今のところ安定しています。\n自覚のないままストレスが溜まっていることもあるので、ときどき自分自身の生活を振り返ってみる時間を持ちましょう'
@@ -227,8 +227,7 @@ const main = async () => {
       await select(item)
     }
     const severity = new Severity(scores)
-    totalScore = severity.calculateScore(scores)
-    severityGrade = severity.assessSeverity(totalScore)
+    severityGrade = severity.assessSeverity(severity.totalScore)
     console.log(severity.resultMessage(severityGrade))
     console.log(lastMessage)
   })
