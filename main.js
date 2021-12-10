@@ -187,21 +187,22 @@ class Severity {
     this.totalScore = totalScore
   }
 
-  assessSeverity(score) {
-    if (score >= 0 && score <= 5) {
+  #assessSeverity() {
+    if (this.totalScore >= 0 && this.totalScore <= 5) {
       return 'nomal'
-    } else if (score >= 6 && score <= 10) {
+    } else if (this.totalScore >= 6 && this.totalScore <= 10) {
       return 'mild'
-    } else if (score >= 11 && score <= 15) {
+    } else if (this.totalScore >= 11 && this.totalScore <= 15) {
       return 'moderate'
-    } else if (score >= 16 && score <= 20) {
+    } else if (this.totalScore >= 16 && this.totalScore <= 20) {
       return 'severe'
     } else {
       return 'verySevere'
     }
   }
 
-  resultMessage(severity) {
+  resultMessage() {
+    const severity = this.#assessSeverity()
     const translation = {nomal: '問題なし', mild: '軽度', moderate: '中等度', severe: '重度', verySevere: 'きわめて重度'}
     console.log(`あなたのうつ症状の重症度は27点中「${this.totalScore}点」で「${translation[severity]}」という結果になりました。`)
     switch (severity){
@@ -227,8 +228,7 @@ const main = async () => {
       await select(item)
     }
     const severity = new Severity(scores)
-    severityGrade = severity.assessSeverity(severity.totalScore)
-    console.log(severity.resultMessage(severityGrade))
+    console.log(severity.resultMessage())
     console.log(lastMessage)
   })
 }
